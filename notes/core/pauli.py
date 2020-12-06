@@ -23,13 +23,16 @@ pauli_names = ("I", "X", "Y", "Z")
 
 # Cell
 
-class PauliOperator:
+class PauliOperator(tuple):
     """
     Multi-qubit Pauli operator.
 
     The operator acts on a basis whose dimensions are indexed by self.indices. When written as
     a tensor product, the lowest index is on the right, corresponding to the least significant
     digit in a bitstring.
+
+    This class is implemented as a subclass of `tuple` so the we get access to all the nice
+    methods and total ordering of tuples. Here we reverse the ordering of `tuple`.
     """
     def __init__(self, indices: Tuple[int, ...]):
         """
@@ -43,7 +46,22 @@ class PauliOperator:
         if any([idx not in {0, 1, 2, 3} for idx in indices]):
             raise ValueError(f"All indices must be in {{0, 1, 2, 3}}.")
         self.dim = 2 ** len(indices)
-        self.indices = indices
+
+    def __lt__(self, other):
+        _check_pauli_operator_for_comparison(other)
+        return super().__gt__(other)
+
+    def __gt__(self, other):
+        _check_pauli_operator_for_comparison(other)
+        return super().__lt__(other)
+
+    def __le__(self, other):
+        _check_pauli_operator_for_comparison(other)
+        return super().__ge__(other)
+
+    def __ge__(self, other):
+        _check_pauli_operator_for_comparison(other)
+        return super().__le__(other)
 
     @property
     @cache
@@ -51,17 +69,17 @@ class PauliOperator:
         """
         Calculate and cache the matrix representation of this Pauli. Subsequent calls to
         """
-        if len(self.indices) > 16:
+        if len(self) > 16:
             raise ValueError(
                 "Good grief, this is a didactic exercise. We won't allocate more than "
-                f"16 qubits ({len(self.indices)} requested).")
+                f"16 qubits ({len(self)} requested).")
         return reduce(
             lambda x, y: np.kron(x, y),
             reversed(
                 list(
                     map(
                         lambda idx: pauli_matrices[idx],
-                        self.indices
+                        self
                     )
                 )
             )
@@ -78,7 +96,15 @@ class PauliOperator:
         return "".join(map(lambda x: pauli_names[x], reversed(indices)))
 
     def __repr__(self):
-        return "PauliOperator " + "".join(map(lambda x: pauli_names[x], reversed(self.indices)))
+        return "PauliOperator " + "".join(map(lambda x: pauli_names[x], reversed(self)))
 
     def __str__(self):
-        return self.name(self.indices)
+        return self.name(self)
+
+
+def _check_pauli_operator_for_comparison(other):
+    if not isinstance(other, PauliOperator):
+        raise TypeError(
+            f"PauliOperator comparison is only supported with another PauliOperator, but "
+            f"comparison to {type(other)} was requested."
+        )
