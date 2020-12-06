@@ -47,10 +47,10 @@ nb_path: "src/tomography.ipynb"
 
 
 
-<div id="5e77f0fa-dc5b-4190-a181-30b0d65a2acb"></div>
+<div id="2f4b8e03-1097-464a-8681-d10c7a6d4c28"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#5e77f0fa-dc5b-4190-a181-30b0d65a2acb');
+var element = $('#2f4b8e03-1097-464a-8681-d10c7a6d4c28');
 
 (function(root) {
   function now() {
@@ -383,10 +383,10 @@ var element = $('#5e77f0fa-dc5b-4190-a181-30b0d65a2acb');
 
 
 
-<div id="41622602-1e31-4594-83dd-de96744c219d"></div>
+<div id="97b378ac-6c17-471d-980b-65f9049bc038"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#41622602-1e31-4594-83dd-de96744c219d');
+var element = $('#97b378ac-6c17-471d-980b-65f9049bc038');
 
 (function(root) {
   function now() {
@@ -696,7 +696,18 @@ var element = $('#41622602-1e31-4594-83dd-de96744c219d');
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Change-of-basis-between-computational-basis-and-Pauli-basis">Change of basis between computational basis and Pauli basis<a class="anchor-link" href="#Change-of-basis-between-computational-basis-and-Pauli-basis"> </a></h1><p>We will want to be able to go between the density matrix in the computational basis</p>
+<h1 id="Change-of-basis-between-computational-basis-and-Pauli-basis">Change of basis between computational basis and Pauli basis<a class="anchor-link" href="#Change-of-basis-between-computational-basis-and-Pauli-basis"> </a></h1>$$
+\newcommand{\expect}[1]{\langle#1\rangle}
+\newcommand{\bra}[1]{\langle#1|}  % put argument into a "bra"
+\newcommand{\ket}[1]{|#1\rangle}  % put argument into a "ket"
+\newcommand{\inner}[2]{\bra{#1}#2\rangle}
+\newcommand{\outer}[2]{\ket{#1}\bra{#2}}
+\newcommand{\tr}{\text{Tr}}
+\newcommand{\hc}[1]{#1^{\dagger}}
+\newcommand{\timeevol}{\mathcal{U}}
+\newcommand{\Uint}{U_{\text{int}}}
+\newcommand{\Hint}{H_{\text{int}}}
+$$<p>We will want to be able to go between the density matrix in the computational basis</p>
 $$
 \rho_c = |a|^2 \outer{0}{0} + a b^* \outer{0}{1} + a^* b \outer{1}{0} + |b|^2 \outer{1}{1}
 $$<p>and in the Pauli basis</p>
@@ -1114,7 +1125,7 @@ $$<p>By inspection of the above expression we can write down the matrices that t
 <script id="1002">
   var xhr = new XMLHttpRequest()
   xhr.responseType = 'blob';
-  xhr.open('GET', "http://localhost:53115/autoload.js?bokeh-autoload-element=1002&bokeh-absolute-url=http://localhost:53115&resources=none", true);
+  xhr.open('GET', "http://localhost:53345/autoload.js?bokeh-autoload-element=1002&bokeh-absolute-url=http://localhost:53345&resources=none", true);
   
   xhr.onload = function (event) {
     var script = document.createElement('script'),
