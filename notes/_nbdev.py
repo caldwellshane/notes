@@ -7,6 +7,7 @@ index = {"pauli_matrices": "core.pauli.ipynb",
          "PauliOperator": "core.pauli.ipynb",
          "computational_to_pauli_state": "tomography.ipynb",
          "pauli_to_computational_state": "tomography.ipynb",
+         "paulis_for_num_qubits": "tomography.ipynb",
          "pauli_transfer_matrix_unitary": "tomography.ipynb",
          "QuantumGate": "tomography.ipynb"}
 

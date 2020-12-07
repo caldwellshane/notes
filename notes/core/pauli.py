@@ -4,7 +4,7 @@ __all__ = ['pauli_matrices', 'pauli_names', 'PauliOperator']
 
 # Cell
 
-from functools import cache
+from functools import cache, reduce, total_ordering
 from typing import Tuple
 
 import numpy as np
@@ -23,7 +23,8 @@ pauli_names = ("I", "X", "Y", "Z")
 
 # Cell
 
-class PauliOperator(tuple):
+@total_ordering
+class PauliOperator:
     """
     Multi-qubit Pauli operator.
 
@@ -46,22 +47,19 @@ class PauliOperator(tuple):
         if any([idx not in {0, 1, 2, 3} for idx in indices]):
             raise ValueError(f"All indices must be in {{0, 1, 2, 3}}.")
         self.dim = 2 ** len(indices)
+        self.indices = indices
+
+    def __hash__(self):
+        return hash(self.indices)
+
+    def __eq__(self, other):
+        _check_pauli_operator_for_comparison(other)
+        return self.indices == other.indices
 
     def __lt__(self, other):
         _check_pauli_operator_for_comparison(other)
-        return super().__gt__(other)
-
-    def __gt__(self, other):
-        _check_pauli_operator_for_comparison(other)
-        return super().__lt__(other)
-
-    def __le__(self, other):
-        _check_pauli_operator_for_comparison(other)
-        return super().__ge__(other)
-
-    def __ge__(self, other):
-        _check_pauli_operator_for_comparison(other)
-        return super().__le__(other)
+        _check_paulis_same_dimension(self, other)
+        return PauliOperator.integer_index(self.indices) < PauliOperator.integer_index(other.indices)
 
     @property
     @cache
@@ -69,24 +67,29 @@ class PauliOperator(tuple):
         """
         Calculate and cache the matrix representation of this Pauli. Subsequent calls to
         """
-        if len(self) > 16:
+        if len(self.indices) > 16:
             raise ValueError(
                 "Good grief, this is a didactic exercise. We won't allocate more than "
-                f"16 qubits ({len(self)} requested).")
+                f"16 qubits ({len(self.indices)} requested).")
         return reduce(
             lambda x, y: np.kron(x, y),
             reversed(
                 list(
                     map(
                         lambda idx: pauli_matrices[idx],
-                        self
+                        self.indices
                     )
                 )
             )
         )
 
     @staticmethod
-    def name(indices: Tuple[int, ...]) -> str:
+    def integer_index(indices: Tuple[int, ...]) -> int:
+        """Compute the single-integer index corresponding to the given tuple indices."""
+        return sum((pauli_index * 4**position for position, pauli_index in enumerate(indices)))
+
+    @staticmethod
+    def name_from_indices(indices: Tuple[int, ...]) -> str:
         """
         Compute the name of a PauliOperator with given indices. Note the written operator
         has the lowest index on the right.
@@ -95,16 +98,27 @@ class PauliOperator(tuple):
         """
         return "".join(map(lambda x: pauli_names[x], reversed(indices)))
 
+    @property
+    def name(self) -> str:
+        return self.name_from_indices(self.indices)
+
     def __repr__(self):
-        return "PauliOperator " + "".join(map(lambda x: pauli_names[x], reversed(self)))
+        return "PauliOperator " + self.name
 
     def __str__(self):
-        return self.name(self)
+        return self.name
 
 
-def _check_pauli_operator_for_comparison(other):
+def _check_pauli_operator_for_comparison(other) -> None:
+    """Raise if `other` is not a `PauliOperator`."""
     if not isinstance(other, PauliOperator):
         raise TypeError(
             f"PauliOperator comparison is only supported with another PauliOperator, but "
             f"comparison to {type(other)} was requested."
         )
+
+
+def _check_paulis_same_dimension(pauli_1: PauliOperator, pauli_2: PauliOperator) -> None:
+    """Raise if `pauli_1` and `pauli_2` have different dimensions."""
+    if pauli_1.dim != pauli_2.dim:
+        raise ValueError()
