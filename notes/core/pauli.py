@@ -31,9 +31,6 @@ class PauliOperator:
     The operator acts on a basis whose dimensions are indexed by self.indices. When written as
     a tensor product, the lowest index is on the right, corresponding to the least significant
     digit in a bitstring.
-
-    This class is implemented as a subclass of `tuple` so the we get access to all the nice
-    methods and total ordering of tuples. Here we reverse the ordering of `tuple`.
     """
     def __init__(self, indices: Tuple[int, ...]):
         """
