@@ -72,7 +72,7 @@ class PauliOperator:
                 "Good grief, this is a didactic exercise. We won't allocate more than "
                 f"16 qubits ({len(self.indices)} requested).")
         return reduce(
-            lambda x, y: np.kron(x, y),
+            np.kron,
             reversed(
                 list(
                     map(
